@@ -67,3 +67,5 @@ Timer (z. B. 60 Sekunden)
 Punktevergabe nach Richtigkeit
 
 Lokal-Tipp: Spieler geben nacheinander ein oder gleichzeitig mit Splitscreen-UI
+DESIGN TEMPLATE
+https://www.canva.com/design/DAGsxPwWMFY/pKguvdEAn1soI-D0ypjMug/edit
