@@ -68,4 +68,4 @@ Punktevergabe nach Richtigkeit
 
 Lokal-Tipp: Spieler geben nacheinander ein oder gleichzeitig mit Splitscreen-UI
 DESIGN TEMPLATE
-https://www.canva.com/design/DAGsxPwWMFY/pKguvdEAn1soI-D0ypjMug/edit
+[https://www.canva.com/design/DAGsxPwWMFY/pKguvdEAn1soI-D0ypjMug/edit](https://www.canva.com/design/DAGsxPwWMFY/pKguvdEAn1soI-D0ypjMug/edit?utm_content=DAGsxPwWMFY&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
