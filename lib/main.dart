@@ -1,3 +1,4 @@
+import 'package:android_game_2025/game_start_template.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(const MyApp());
@@ -14,7 +15,12 @@ class ButtonList extends StatelessWidget {
         var item = items[index];
         return Padding(padding: const EdgeInsets.all(8.0),
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const GameSetupTemplate(title: 'TicTacToe', minPlayers: 2, maxPlayers: 2)),
+              );
+            },
             child: Text(item),
           ),
         );
