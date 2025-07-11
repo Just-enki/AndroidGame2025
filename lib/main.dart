@@ -1,7 +1,7 @@
 import 'package:android_game_2025/game_template.dart';
 import 'package:android_game_2025/tictactoe.dart';
 import 'package:flutter/material.dart';
-
+import 'package:android_game_2025/game_over.dart';
 
 void main() => runApp(const MyApp());
 
@@ -24,13 +24,22 @@ class ButtonList extends StatelessWidget {
                   context,
                   MaterialPageRoute(builder: (context) => const TicTacToePage()),
                 );
-              } else {
+              }
+              if (index == 1) { //OR if item == "item 1"
+                // Navigate to GameOver for "Item 2"
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const GameOver()),
+                );
+              }/*
+              // triggers no matter what??
+              if (index != 0 || index != 1){
                 // All other items go to GameTemplate
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const GameTemplate()),
                 );
-              }
+              }*/
             },
             child: Text(item),
           ),

@@ -32,13 +32,14 @@ class _TicTacToePageState extends State<TicTacToePage> {
       if (board[i].every((cell) => cell == player) ||
           [0, 1, 2].every((j) => board[j][i] == player)) {
         return true;
+        //TODO: if win Redirect to game_over
       }
     }
     return (board[0][0] == player && board[1][1] == player && board[2][2] == player) ||
         (board[0][2] == player && board[1][1] == player && board[2][0] == player);
   }
 
-  bool _isDraw() {
+  bool _isDraw() { //TODO: Redirect to game_over
     for (var row in board) {
       if (row.contains('')) return false;
     }
