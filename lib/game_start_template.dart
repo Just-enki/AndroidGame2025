@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:android_game_2025/tictactoe.dart';
 
 class GameSetupTemplate extends StatefulWidget {
   final String title;
@@ -54,6 +55,7 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
         .where((name) => name.isNotEmpty)
         .toList();
 
+
     if (playerNames.toSet().length < playerNames.length) {
       _showMessage("Spielernamen müssen eindeutig sein.");
       return;
@@ -68,6 +70,10 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
       _showMessage("Maximal ${widget.maxPlayers} Spieler erlaubt.");
       return;
     }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const TicTacToePage()),
+    );
   }
 
   void _showMessage(String message) {
@@ -152,6 +158,7 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
                 child: const Text(
                   "Start Game",
                   style: TextStyle(fontSize: 18),
+
                 ),
               ),
             ),
