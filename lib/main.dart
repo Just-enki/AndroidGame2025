@@ -1,5 +1,6 @@
 import 'package:android_game_2025/game_template.dart';
 import 'package:android_game_2025/tictactoe.dart';
+import 'package:android_game_2025/game_start_template.dart';
 import 'package:flutter/material.dart';
 import 'package:android_game_2025/game_over.dart';
 
@@ -22,7 +23,7 @@ class ButtonList extends StatelessWidget {
                 // Navigate to TicTacToePage for "Item 1"
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const TicTacToePage()),
+                  MaterialPageRoute(builder: (context) => const GameSetupTemplate(title: 'TicTacToe', minPlayers: 2, maxPlayers: 2)),
                 );
               }
               if (index == 1) { //OR if item == "item 1"
