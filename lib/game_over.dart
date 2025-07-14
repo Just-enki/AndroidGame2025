@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:android_game_2025/main.dart';
 //TODO: import all games?
 import 'package:android_game_2025/tictactoe.dart';
+import 'package:android_game_2025/player.dart';
+import 'package:android_game_2025/game_start_template.dart'; //TODO: has players, move to separate file?
 
 class GameOver extends StatelessWidget {
-  const GameOver({super.key});
+  final List<Player> players;
+
+  const GameOver({super.key, required this.players});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +43,7 @@ class GameOver extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              const Leaderboard(), // insert leaderboard
+              Leaderboard(players: players), // insert leaderboard, pass players
               const SizedBox(height: 24),
               Center(
                 child: ElevatedButton(
@@ -48,7 +52,7 @@ class GameOver extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         //TODO: return to the correct game, use context? variable?
-                        builder: (context) => const TicTacToePage(),
+                        builder: (context) => TicTacToePage(players: players),
                       ),
                     );
                   },
@@ -64,29 +68,20 @@ class GameOver extends StatelessWidget {
 }
 
 class Leaderboard extends StatelessWidget {
-  const Leaderboard({super.key});
+  final List<Player> players;
+
+  const Leaderboard({super.key, required this.players});
+
 
   @override
-  //TODO: convert players to objects?  e.g. player.name; player.score;
   Widget build(BuildContext context) {
-    final int p1points = 10;
-    final int p2points = 3;
-    final String p1 = "player 1";
-    final String p2 = "player 2";
-
-    //static for now
-    final List<String> players = [
-      "$p1:   $p1points points",
-      "$p2:   $p2points points",
-    ];
-    // display leaderboard as column
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: players.map(
             (player) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: Text(
-            player,
+            '${player.name}:   ${player.score} points',
             style: const TextStyle(fontSize: 18),
           ),
         ),
@@ -94,3 +89,4 @@ class Leaderboard extends StatelessWidget {
     );
   }
 }
+

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:android_game_2025/tictactoe.dart';
+import 'package:android_game_2025/player.dart';
 
 class GameSetupTemplate extends StatefulWidget {
   final String title;
@@ -19,29 +20,42 @@ class GameSetupTemplate extends StatefulWidget {
 
 class _GameSetupTemplateState extends State<GameSetupTemplate> {
   final List<TextEditingController> _controllers = [];
+  final List<Player> _players = [];
 
   @override
   void initState() {
     super.initState();
     for (int i = 0; i < widget.minPlayers; i++) {
-      _controllers.add(TextEditingController());
-    }
-  }
-
-
-  void _addPlayer() {
-    if (_controllers.length < widget.maxPlayers) {
-      setState(() {
-        _controllers.add(TextEditingController(text: 'Spieler ${_controllers.length + 1}'));
+      final controller = TextEditingController(text: 'Spieler ${i + 1}');
+      _controllers.add(controller);
+      _players.add(Player(name: controller.text));
+      controller.addListener(() {
+        _players[i].name = controller.text;
       });
     }
   }
 
+  void _addPlayer() {
+    if (_players.length < widget.maxPlayers) {
+      setState(() {
+        final index = _players.length;
+        final controller = TextEditingController(text: 'Spieler ${index + 1}');
+        _controllers.add(controller);
+        _players.add(Player(name: controller.text));
+        controller.addListener(() {
+          _players[index].name = controller.text;
+        });
+      });
+    }
+  }
+
+
   void _removePlayer(int index) {
-    if (_controllers.length > widget.minPlayers) {
+    if (_players.length > widget.minPlayers) {
       setState(() {
         _controllers[index].dispose();
         _controllers.removeAt(index);
+        _players.removeAt(index);
       });
     } else {
       _showMessage("At least ${widget.minPlayers} players are required.");
@@ -72,7 +86,7 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
     }
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const TicTacToePage()),
+      MaterialPageRoute(builder: (context) => TicTacToePage(players: _players)),
     );
   }
 

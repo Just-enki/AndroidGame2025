@@ -1,7 +1,14 @@
+import 'dart:io';
+
+import 'package:android_game_2025/game_start_template.dart';
 import 'package:flutter/material.dart';
+import 'package:android_game_2025/game_over.dart';
+import 'package:android_game_2025/player.dart';
 
 class TicTacToePage extends StatefulWidget {
-  const TicTacToePage({super.key});
+  final List<Player> players;
+
+  const TicTacToePage({super.key, required this.players});
 
   @override
   State<TicTacToePage> createState() => _TicTacToePageState();
@@ -9,37 +16,50 @@ class TicTacToePage extends StatefulWidget {
 
 class _TicTacToePageState extends State<TicTacToePage> {
   List<List<String>> board = List.generate(3, (_) => List.filled(3, ''));
-  String currentPlayer = 'X';
+  int currentPlayerIndex = 0; // 0 = Player X, 1 = Player O
   String? winner;
+
+  List<Player> get players => widget.players;
+
+  String get currentSymbol => currentPlayerIndex == 0 ? 'X' : 'O';
+  Player get currentPlayer => players[currentPlayerIndex];
 
   void _handleTap(int row, int col) {
     if (board[row][col] != '' || winner != null) return;
 
     setState(() {
-      board[row][col] = currentPlayer;
-      if (_checkWin(currentPlayer)) {
-        winner = currentPlayer;
+      board[row][col] = currentSymbol;
+
+      if (_checkWin(currentSymbol)) {
+        winner = currentPlayer.name;
+        currentPlayer.score++;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GameOver(players: players),
+          ),
+        );
       } else if (_isDraw()) {
         winner = 'Draw';
+        // Optionally: Navigate or show a dialog for draw.
       } else {
-        currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
       }
     });
   }
 
-  bool _checkWin(String player) {
+  bool _checkWin(String symbol) {
     for (int i = 0; i < 3; i++) {
-      if (board[i].every((cell) => cell == player) ||
-          [0, 1, 2].every((j) => board[j][i] == player)) {
+      if (board[i].every((cell) => cell == symbol) ||
+          [0, 1, 2].every((j) => board[j][i] == symbol)) {
         return true;
-        //TODO: if win Redirect to game_over
       }
     }
-    return (board[0][0] == player && board[1][1] == player && board[2][2] == player) ||
-        (board[0][2] == player && board[1][1] == player && board[2][0] == player);
+    return (board[0][0] == symbol && board[1][1] == symbol && board[2][2] == symbol) ||
+        (board[0][2] == symbol && board[1][1] == symbol && board[2][0] == symbol);
   }
 
-  bool _isDraw() { //TODO: Redirect to game_over
+  bool _isDraw() {
     for (var row in board) {
       if (row.contains('')) return false;
     }
@@ -49,7 +69,7 @@ class _TicTacToePageState extends State<TicTacToePage> {
   void _resetGame() {
     setState(() {
       board = List.generate(3, (_) => List.filled(3, ''));
-      currentPlayer = 'X';
+      currentPlayerIndex = 0;
       winner = null;
     });
   }

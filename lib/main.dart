@@ -3,6 +3,7 @@ import 'package:android_game_2025/tictactoe.dart';
 import 'package:android_game_2025/game_start_template.dart';
 import 'package:flutter/material.dart';
 import 'package:android_game_2025/game_over.dart';
+import 'package:android_game_2025/player.dart';
 
 void main() => runApp(const MyApp());
 
@@ -30,7 +31,7 @@ class ButtonList extends StatelessWidget {
                 // Navigate to GameOver for "Item 2"
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const GameOver()),
+                  MaterialPageRoute(builder: (context) => GameOver(players: players)),
                 );
               }/*
               // triggers no matter what??
@@ -49,6 +50,11 @@ class ButtonList extends StatelessWidget {
     );
   }
 }
+//dummy player list
+final List<Player> players = [
+  Player(name: 'player_one', score: 420),
+  Player(name: 'player_two', score: 69),
+];
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
