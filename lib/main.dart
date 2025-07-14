@@ -3,7 +3,7 @@ import 'package:android_game_2025/tictactoe.dart';
 import 'package:android_game_2025/game_definition.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(const MainPage());
 
 class ButtonList extends StatelessWidget {
   const ButtonList({super.key});
@@ -11,7 +11,7 @@ class ButtonList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final games = <GameDefinition>[
-      TicTacToePage.gameDef,
+      TicTacToe.gameDef,
       // add more games here...
     ];
     return ListView.builder(
@@ -38,8 +38,8 @@ class ButtonList extends StatelessWidget {
   }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MainPage extends StatelessWidget {
+  const MainPage({super.key});
 
   @override
   Widget build(BuildContext context) {

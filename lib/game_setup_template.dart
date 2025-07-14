@@ -1,5 +1,7 @@
 import 'package:android_game_2025/game_definition.dart';
+import 'package:android_game_2025/main.dart';
 import 'package:flutter/material.dart';
+import 'package:android_game_2025/player.dart';
 
 class GameSetupTemplate extends StatefulWidget {
   final GameDefinition gameDef;
@@ -15,28 +17,51 @@ class GameSetupTemplate extends StatefulWidget {
 
 class _GameSetupTemplateState extends State<GameSetupTemplate> {
   final List<TextEditingController> _controllers = [];
+  final List<Player> _players = [];
 
   @override
   void initState() {
     super.initState();
     for (int i = 0; i < widget.gameDef.minPlayers; i++) {
-      _controllers.add(TextEditingController());
-    }
-  }
-
-  void _addPlayer() {
-    if (_controllers.length < widget.gameDef.maxPlayers) {
-      setState(() {
-        _controllers.add(TextEditingController(text: 'Spieler ${_controllers.length + 1}'));
+      final controller = TextEditingController(text: 'Spieler ${i + 1}');
+      _controllers.add(controller);
+      _players.add(Player(name: controller.text));
+      controller.addListener(() {
+        _players[i].name = controller.text;
       });
     }
   }
 
+    void _goToMainPage(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MainPage(),
+      ),
+    );
+  }
+
+  void _addPlayer() {
+    if (_players.length < widget.gameDef.maxPlayers) {
+      setState(() {
+        final index = _players.length;
+        final controller = TextEditingController(text: 'Spieler ${index + 1}');
+        _controllers.add(controller);
+        _players.add(Player(name: controller.text));
+        controller.addListener(() {
+          _players[index].name = controller.text;
+        });
+      });
+    }
+  }
+
+
   void _removePlayer(int index) {
-    if (_controllers.length > widget.gameDef.minPlayers) {
+    if (_players.length > widget.gameDef.minPlayers) {
       setState(() {
         _controllers[index].dispose();
         _controllers.removeAt(index);
+        _players.removeAt(index);
       });
     } else {
       _showMessage("At least ${widget.gameDef.minPlayers} players are required.");
@@ -49,6 +74,7 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
         .map((controller) => controller.text.trim())
         .where((name) => name.isNotEmpty)
         .toList();
+
 
     if (playerNames.toSet().length < playerNames.length) {
       _showMessage("Spielernamen müssen eindeutig sein.");
@@ -67,7 +93,7 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => widget.gameDef.gameBuilder(playerNames, widget.gameDef, () {
+        builder: (_) => widget.gameDef.gameBuilder(_players, widget.gameDef, () {
           Navigator.of(context).pop();
           }
         ),
@@ -94,7 +120,10 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.gameDef.name),
-        leading: BackButton(),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => _goToMainPage(context),
+        ),
       ),
       body: Column(
         children: [
@@ -157,6 +186,7 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
                 child: const Text(
                   "Start Game",
                   style: TextStyle(fontSize: 18),
+
                 ),
               ),
             ),

@@ -1,21 +1,21 @@
 import 'package:android_game_2025/game_definition.dart';
 import 'package:android_game_2025/game_over_template.dart';
+import 'package:android_game_2025/player.dart';
 import 'package:flutter/material.dart';
 
-void navigateToGameOverScreen(BuildContext context, GameDefinition gameDef, List<String> playerNames, Map<String, int>? finalScores) {
+void navigateToGameOverScreen(BuildContext context, GameDefinition gameDef, List<Player> players) {
   Navigator.of(context).push(
     MaterialPageRoute(
       builder: (_) => GameOverTemplate(
         gameDef: gameDef,
-        playerNames: playerNames,
-        finalScores: finalScores,
+        players: players,
       ),
     ),
   );
 }
 
 class GameScreenTemplate extends StatefulWidget {
-  final List<String> players;
+  final List<Player> players;
   final VoidCallback onExitConfirmed;
   final Widget board;
 

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'game_setup_template.dart';
 import 'game_definition.dart';
+import 'player.dart';
 
 class GameOverTemplate extends StatelessWidget {
   final GameDefinition gameDef;
-  final List<String> playerNames;
-  final Map<String, int>? finalScores;
+  final List<Player> players;
+
   const GameOverTemplate({
     super.key,
     required this.gameDef,
-    required this.playerNames,
-    this.finalScores,
+    required this.players,
   });
 
   void _goToSetup(BuildContext context) {
@@ -19,6 +19,18 @@ class GameOverTemplate extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => GameSetupTemplate(
           gameDef: gameDef,
+        ),
+      ),
+    );
+  }
+
+  void _goToGame(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => gameDef.gameBuilder(players, gameDef, () {
+          Navigator.of(context).pop();
+          }
         ),
       ),
     );
@@ -43,23 +55,41 @@ class GameOverTemplate extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            if (finalScores != null)
-              ...finalScores!.entries.map((e) => Text(
-                    '${e.key}: ${e.value} Punkte',
-                    style: const TextStyle(fontSize: 18),
-                  )),
-            const Spacer(),
+            Leaderboard(players: players),
             SizedBox(
               width: double.infinity,
               height: 60,
               child: ElevatedButton(
-                onPressed: () => _goToSetup(context),
+                onPressed: () => _goToGame(context),
                 child: const Text('Erneut spielen'),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class Leaderboard extends StatelessWidget {
+  final List<Player> players;
+
+  const Leaderboard({super.key, required this.players});
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: players.map(
+            (player) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Text(
+            '${player.name}:   ${player.score} points',
+            style: const TextStyle(fontSize: 18),
+          ),
+        ),
+      ).toList(),
     );
   }
 }

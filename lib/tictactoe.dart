@@ -1,37 +1,40 @@
 import 'package:android_game_2025/game_screen_template.dart';
+import 'package:android_game_2025/player.dart';
 import 'package:flutter/material.dart';
 import 'game_definition.dart';
 
-class TicTacToePage extends StatefulWidget {
-  final List<String> players;
+class TicTacToe extends StatefulWidget {
+  final List<Player> players;
   static final GameDefinition gameDef = GameDefinition(
     name: 'TicTacToe',
     minPlayers: 2,
     maxPlayers: 2,
-    gameBuilder: (players, gameDef, onExitConfirmed) => TicTacToePage(players: players, onExit: onExitConfirmed),
+    gameBuilder: (players, gameDef, onExitConfirmed) => TicTacToe(players: players, onExit: onExitConfirmed),
   );
   final VoidCallback onExit;
 
-  const TicTacToePage({
+  const TicTacToe({
     super.key,
     required this.players,
     required this.onExit,
   });
 
   @override
-  State<TicTacToePage> createState() => _TicTacToePageState();
+  State<TicTacToe> createState() => _TicTacToeState();
 }
 
-class _TicTacToePageState extends State<TicTacToePage> {
+class _TicTacToeState extends State<TicTacToe> {
   late List<List<String>> board;
-  late String currentPlayer;
+  int currentPlayerIndex = 0;
+  List<Player> get players => widget.players;
+  String get currentSymbol => currentPlayerIndex == 0 ? 'X' : 'O';
+  Player get currentPlayer => players[currentPlayerIndex];
   String? winner;
 
   @override
   void initState() {
     super.initState();
     board = List.generate(3, (_) => List.filled(3, ''));
-    currentPlayer = widget.players.first;
   }
 
   void _handleTap(int i, int j) {
@@ -41,38 +44,38 @@ class _TicTacToePageState extends State<TicTacToePage> {
         return;
     }
     setState(() {
-      board[i][j] = currentPlayer;
-      if (_checkWin(currentPlayer)) {
-        winner = currentPlayer;
+      board[i][j] = currentSymbol;
+      if (_checkWin(currentSymbol)) {
+        currentPlayer.score++;
+        winner = currentPlayer.name;
         ended = true;
       } else if (_isDraw()) {
         winner = 'Draw';
         ended = true;
       } else {
-        final idx = widget.players.indexOf(currentPlayer);
-        currentPlayer = widget.players[(idx + 1) % widget.players.length];
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
       }
 
       if (ended) {
+        _resetGame();
         navigateToGameOverScreen(
           context,
-          TicTacToePage.gameDef,
+          TicTacToe.gameDef,
           widget.players,
-          null,
         );
       }
     });
   }
 
-  bool _checkWin(String p) {
+  bool _checkWin(String symbol) {
     for (int i = 0; i < 3; i++) {
-      if (board[i].every((c) => c == p) ||
-          [0, 1, 2].every((j) => board[j][i] == p)) {
+      if (board[i].every((c) => c == symbol) ||
+          [0, 1, 2].every((j) => board[j][i] == symbol)) {
         return true;
       }
     }
-    return (board[0][0] == p && board[1][1] == p && board[2][2] == p) ||
-        (board[0][2] == p && board[1][1] == p && board[2][0] == p);
+    return (board[0][0] == symbol && board[1][1] == symbol && board[2][2] == symbol) ||
+        (board[0][2] == symbol && board[1][1] == symbol && board[2][0] == symbol);
   }
 
   bool _isDraw() =>
@@ -109,15 +112,15 @@ class _TicTacToePageState extends State<TicTacToePage> {
           ),
         ),
         const SizedBox(height: 20),
-        ElevatedButton(onPressed: _reset, child: const Text('Neustart')),
+        ElevatedButton(onPressed: _resetGame, child: const Text('Neustart')),
       ],
     );
   }
 
-  void _reset() {
+  void _resetGame() {
     setState(() {
       board = List.generate(3, (_) => List.filled(3, ''));
-      currentPlayer = widget.players.first;
+      currentPlayerIndex = 0;
       winner = null;
     });
   }
