@@ -1,4 +1,6 @@
-import 'package:android_game_2025/game_start_template.dart';
+import 'package:android_game_2025/game_setup_template.dart';
+import 'package:android_game_2025/tictactoe.dart';
+import 'package:android_game_2025/game_definition.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(const MyApp());
@@ -8,20 +10,27 @@ class ButtonList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> items = ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"];
+    final games = <GameDefinition>[
+      TicTacToePage.gameDef,
+      // add more games here...
+    ];
     return ListView.builder(
-      itemCount: items.length,
+      itemCount: games.length,
       itemBuilder: (context, index) {
-        var item = items[index];
+        GameDefinition game = games[index];
         return Padding(padding: const EdgeInsets.all(8.0),
           child: ElevatedButton(
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const GameSetupTemplate(title: 'TicTacToe', minPlayers: 2, maxPlayers: 2)),
+                MaterialPageRoute(
+                  builder: (_) => GameSetupTemplate(
+                    gameDef: game,
+                  ),
+                ),
               );
             },
-            child: Text(item),
+            child: Text(game.name),
           ),
         );
       },

@@ -1,15 +1,12 @@
+import 'package:android_game_2025/game_definition.dart';
 import 'package:flutter/material.dart';
 
 class GameSetupTemplate extends StatefulWidget {
-  final String title;
-  final int minPlayers;
-  final int maxPlayers;
+  final GameDefinition gameDef;
 
   const GameSetupTemplate({
     super.key,
-    required this.title,
-    required this.minPlayers,
-    required this.maxPlayers,
+    required this.gameDef,
   });
 
   @override
@@ -22,14 +19,13 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < widget.minPlayers; i++) {
+    for (int i = 0; i < widget.gameDef.minPlayers; i++) {
       _controllers.add(TextEditingController());
     }
   }
 
-
   void _addPlayer() {
-    if (_controllers.length < widget.maxPlayers) {
+    if (_controllers.length < widget.gameDef.maxPlayers) {
       setState(() {
         _controllers.add(TextEditingController(text: 'Spieler ${_controllers.length + 1}'));
       });
@@ -37,13 +33,13 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
   }
 
   void _removePlayer(int index) {
-    if (_controllers.length > widget.minPlayers) {
+    if (_controllers.length > widget.gameDef.minPlayers) {
       setState(() {
         _controllers[index].dispose();
         _controllers.removeAt(index);
       });
     } else {
-      _showMessage("At least ${widget.minPlayers} players are required.");
+      _showMessage("At least ${widget.gameDef.minPlayers} players are required.");
     }
   }
 
@@ -59,15 +55,24 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
       return;
     }
 
-    if (playerNames.length < widget.minPlayers) {
-      _showMessage("Mindestens ${widget.minPlayers} Spieler erforderlich.");
+    if (playerNames.length < widget.gameDef.minPlayers) {
+      _showMessage("Mindestens ${widget.gameDef.minPlayers} Spieler erforderlich.");
       return;
     }
 
-    if (playerNames.length > widget.maxPlayers) {
-      _showMessage("Maximal ${widget.maxPlayers} Spieler erlaubt.");
+    if (playerNames.length > widget.gameDef.maxPlayers) {
+      _showMessage("Maximal ${widget.gameDef.maxPlayers} Spieler erlaubt.");
       return;
     }
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => widget.gameDef.gameBuilder(playerNames, widget.gameDef, () {
+          Navigator.of(context).pop();
+          }
+        ),
+      ),
+    );
   }
 
   void _showMessage(String message) {
@@ -88,7 +93,7 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.gameDef.name),
         leading: BackButton(),
       ),
       body: Column(
@@ -102,7 +107,7 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
                   style: TextStyle(fontSize: 20),
                 ),
                 const Spacer(),
-                if (_controllers.length < widget.maxPlayers)
+                if (_controllers.length < widget.gameDef.maxPlayers)
                   IconButton(
                     icon: const Icon(Icons.add),
                     onPressed: _addPlayer,
