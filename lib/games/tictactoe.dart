@@ -1,7 +1,9 @@
-import 'package:android_game_2025/game_screen_template.dart';
-import 'package:android_game_2025/player.dart';
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'game_definition.dart';
+
+import '../templates/game_screen_template.dart';
+import '../templates/player.dart';
+import '../templates/game_definition.dart';
 
 class TicTacToe extends StatefulWidget {
   final List<Player> players;
@@ -35,6 +37,7 @@ class _TicTacToeState extends State<TicTacToe> {
   void initState() {
     super.initState();
     board = List.generate(3, (_) => List.filled(3, ''));
+    currentPlayerIndex = Random().nextInt(players.length);
   }
 
   void _handleTap(int i, int j) {
@@ -85,10 +88,10 @@ class _TicTacToeState extends State<TicTacToe> {
     return LayoutBuilder(
         builder: (context, constraints) {
           // Determine the max size that the board can be (based on smallest dimension)
-          double buttonHeight = 60;
+          double restartButtonHeight = 60;
           double margin = 4;
           double borderWidth = 3;
-          double boardSize = constraints.maxHeight - buttonHeight;
+          double boardSize = constraints.maxHeight - restartButtonHeight;
           boardSize = boardSize > constraints.maxWidth ? constraints.maxWidth : boardSize;
 
           double cellSize = (boardSize - (margin * 2) * 3) / 3;
@@ -128,7 +131,7 @@ class _TicTacToeState extends State<TicTacToe> {
               ),
               SizedBox(
                 width: double.infinity,
-                height: buttonHeight,
+                height: restartButtonHeight,
                 child: ElevatedButton(
                   onPressed: _resetGame,
                   child: const Text('Neustart'),
@@ -153,6 +156,7 @@ class _TicTacToeState extends State<TicTacToe> {
   Widget build(BuildContext context) {
     return GameScreenTemplate(
       players: widget.players,
+      currentPlayerNameFunction: () => currentPlayer.name,
       onExitConfirmed: widget.onExit,
       board: _buildBoard(),
     );

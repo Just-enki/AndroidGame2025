@@ -1,7 +1,10 @@
-import 'package:android_game_2025/game_setup_template.dart';
-import 'package:android_game_2025/tictactoe.dart';
-import 'package:android_game_2025/game_definition.dart';
 import 'package:flutter/material.dart';
+
+import 'games/connect_four.dart';
+import 'games/tictactoe.dart';
+import 'templates/game_setup_template.dart';
+import 'templates/game_definition.dart';
+
 
 void main() => runApp(const MainPage());
 
@@ -12,6 +15,7 @@ class ButtonList extends StatelessWidget {
   Widget build(BuildContext context) {
     final games = <GameDefinition>[
       TicTacToe.gameDef,
+      ConnectFour.gameDef,
       // add more games here...
     ];
     return ListView.builder(

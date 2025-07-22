@@ -1,5 +1,5 @@
-import 'package:android_game_2025/player.dart';
 import 'package:flutter/widgets.dart';
+import 'player.dart';
 
 class GameDefinition {
   final String name;

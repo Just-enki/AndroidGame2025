@@ -1,7 +1,9 @@
-import 'package:android_game_2025/game_definition.dart';
-import 'package:android_game_2025/game_over_template.dart';
-import 'package:android_game_2025/player.dart';
 import 'package:flutter/material.dart';
+
+import 'game_definition.dart';
+import 'game_over_template.dart';
+import 'game_setup_template.dart';
+import 'player.dart';
 
 void navigateToGameOverScreen(BuildContext context, GameDefinition gameDef, List<Player> players) {
   Navigator.of(context).push(
@@ -16,12 +18,14 @@ void navigateToGameOverScreen(BuildContext context, GameDefinition gameDef, List
 
 class GameScreenTemplate extends StatefulWidget {
   final List<Player> players;
+  final String Function() currentPlayerNameFunction;
   final VoidCallback onExitConfirmed;
   final Widget board;
 
   const GameScreenTemplate({
     super.key,
     required this.players,
+    required this.currentPlayerNameFunction,
     required this.onExitConfirmed,
     required this.board,
   });
@@ -42,10 +46,7 @@ class _GameScreenTemplateState extends State<GameScreenTemplate> {
         actions: [
           TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Abbrechen')),
           TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              widget.onExitConfirmed();
-            },
+            onPressed: () => widget.onExitConfirmed,
             child: const Text('Ja, beenden'),
           ),
         ],
@@ -55,7 +56,7 @@ class _GameScreenTemplateState extends State<GameScreenTemplate> {
 
   @override
   Widget build(BuildContext context) {
-    final title = 'Am Zug: ${widget.players[currentPlayerIndex]}';
+    final title = 'Am Zug: ${widget.currentPlayerNameFunction()}';
 
     return Scaffold(
       appBar: AppBar(
