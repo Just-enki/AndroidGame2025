@@ -11,14 +11,12 @@ class ConnectFour extends StatefulWidget {
     name: 'ConnectFour',
     minPlayers: 2,
     maxPlayers: 2,
-    gameBuilder: (players, gameDef, onExitConfirmed) => ConnectFour(players: players, onExit: onExitConfirmed),
+    gameBuilder: (players, gameDef) => ConnectFour(players: players),
   );
-  final VoidCallback onExit;
 
   const ConnectFour({
     super.key,
     required this.players,
-    required this.onExit,
   });
 
   @override
@@ -199,7 +197,7 @@ class _ConnectFourState extends State<ConnectFour> {
       players: players,
       currentPlayerNameFunction: () =>
       '${currentPlayer.name} (${_getPlayerColorName(currentColor)})',
-      onExitConfirmed: widget.onExit,
+      gameDefinition: ConnectFour.gameDef,
       board: _buildBoard(),
     );
   }
