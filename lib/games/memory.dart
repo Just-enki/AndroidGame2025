@@ -11,14 +11,13 @@ class Memory extends StatefulWidget {
     name: 'Memory',
     minPlayers: 1,
     maxPlayers: 3,
-    gameBuilder: (players, gameDef, onExitConfirmed) => Memory(players: players, onExit: onExitConfirmed),
+    gameBuilder: (players, gameDef) => Memory(players: players),
   );
-  final VoidCallback onExit;
+
 
   const Memory({
     super.key,
     required this.players,
-    required this.onExit,
   });
 
   @override
@@ -254,7 +253,7 @@ class _MemoryState extends State<Memory> {
     return GameScreenTemplate(
       players: widget.players,
       currentPlayerNameFunction: () => '${currentPlayer.name} Paare: ${playerScores[currentPlayerIndex]}',
-      onExitConfirmed: widget.onExit,
+      gameDefinition: Memory.gameDef,
       board: _buildBoard(),
     );
   }
