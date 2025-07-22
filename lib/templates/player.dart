@@ -1,4 +1,3 @@
-//ml: added player
 class Player {
   String name;
   int score;

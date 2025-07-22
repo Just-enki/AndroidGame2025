@@ -1,7 +1,8 @@
-import 'package:android_game_2025/game_definition.dart';
-import 'package:android_game_2025/main.dart';
 import 'package:flutter/material.dart';
-import 'package:android_game_2025/player.dart';
+
+import 'game_definition.dart';
+import '../main.dart';
+import 'player.dart';
 
 void navigateBackToGameSetupScreen(BuildContext context, GameDefinition gameDef) {
   Navigator.pushReplacement(
