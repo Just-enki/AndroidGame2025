@@ -6,7 +6,7 @@ import 'game_setup_template.dart';
 import 'player.dart';
 
 void navigateToGameOverScreen(BuildContext context, GameDefinition gameDef, List<Player> players) {
-  Navigator.of(context).push(
+  Navigator.of(context).pushReplacement(
     MaterialPageRoute(
       builder: (_) => GameOverTemplate(
         gameDef: gameDef,
@@ -16,17 +16,27 @@ void navigateToGameOverScreen(BuildContext context, GameDefinition gameDef, List
   );
 }
 
+void navigateToGameSetupScreen(BuildContext context, GameDefinition gameDef) {
+  Navigator.of(context).pushReplacement(
+    MaterialPageRoute(
+      builder: (_) => GameSetupTemplate(
+        gameDef: gameDef,
+      ),
+    ),
+  );
+}
+
 class GameScreenTemplate extends StatefulWidget {
   final List<Player> players;
   final String Function() currentPlayerNameFunction;
-  final VoidCallback onExitConfirmed;
+  final GameDefinition gameDefinition;
   final Widget board;
 
   const GameScreenTemplate({
     super.key,
     required this.players,
     required this.currentPlayerNameFunction,
-    required this.onExitConfirmed,
+    required this.gameDefinition,
     required this.board,
   });
 
@@ -46,7 +56,10 @@ class _GameScreenTemplateState extends State<GameScreenTemplate> {
         actions: [
           TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Abbrechen')),
           TextButton(
-            onPressed: () => widget.onExitConfirmed,
+            onPressed: () {
+              Navigator.of(context).pop();
+              navigateToGameSetupScreen(context, widget.gameDefinition);
+            },
             child: const Text('Ja, beenden'),
           ),
         ],

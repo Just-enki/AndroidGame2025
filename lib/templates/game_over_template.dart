@@ -28,10 +28,7 @@ class GameOverTemplate extends StatelessWidget {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => gameDef.gameBuilder(players, gameDef, () {
-          Navigator.of(context).pop();
-          }
-        ),
+        builder: (_) => gameDef.gameBuilder(players, gameDef),
       ),
     );
   }

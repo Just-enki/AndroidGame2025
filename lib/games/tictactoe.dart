@@ -11,14 +11,12 @@ class TicTacToe extends StatefulWidget {
     name: 'TicTacToe',
     minPlayers: 2,
     maxPlayers: 2,
-    gameBuilder: (players, gameDef, onExitConfirmed) => TicTacToe(players: players, onExit: onExitConfirmed),
+    gameBuilder: (players, gameDef) => TicTacToe(players: players),
   );
-  final VoidCallback onExit;
 
   const TicTacToe({
     super.key,
     required this.players,
-    required this.onExit,
   });
 
   @override
@@ -157,7 +155,7 @@ class _TicTacToeState extends State<TicTacToe> {
     return GameScreenTemplate(
       players: widget.players,
       currentPlayerNameFunction: () => currentPlayer.name,
-      onExitConfirmed: widget.onExit,
+      gameDefinition: TicTacToe.gameDef,
       board: _buildBoard(),
     );
   }
