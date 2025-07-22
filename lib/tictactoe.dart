@@ -82,40 +82,64 @@ class _TicTacToeState extends State<TicTacToe> {
       board.expand((row) => row).every((cell) => cell.isNotEmpty);
 
   Widget _buildBoard() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (winner != null) ...[
-          Text(
-            winner == 'Draw' ? 'Unentschieden!' : 'Spieler $winner gewinnt!',
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-        ],
-        ...List.generate(3, (i) =>
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(3, (j) {
-              return GestureDetector(
-                onTap: () => _handleTap(i, j),
-                child: Container(
-                  width: 80, height: 80, margin: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.teal, width: 2),
-                  ),
-                  child: Center(
-                    child: Text(board[i][j], style: const TextStyle(fontSize: 36)),
+    return LayoutBuilder(
+        builder: (context, constraints) {
+          // Determine the max size that the board can be (based on smallest dimension)
+          double buttonHeight = 60;
+          double margin = 4;
+          double borderWidth = 3;
+          double boardSize = constraints.maxHeight - buttonHeight;
+          boardSize = boardSize > constraints.maxWidth ? constraints.maxWidth : boardSize;
+
+          double cellSize = (boardSize - (margin * 2) * 3) / 3;
+
+          return Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(3, (i) =>
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(3, (j) {
+                            return GestureDetector(
+                              onTap: () => _handleTap(i, j),
+                              child: Container(
+                                width: cellSize,
+                                height: cellSize,
+                                margin: EdgeInsets.all(margin),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black, width: borderWidth),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    board[i][j],
+                                    style: const TextStyle(fontSize: 36),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                        ),
+                    ),
                   ),
                 ),
-              );
-            }),
-          ),
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(onPressed: _resetGame, child: const Text('Neustart')),
-      ],
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: buttonHeight,
+                child: ElevatedButton(
+                  onPressed: _resetGame,
+                  child: const Text('Neustart'),
+                ),
+              ),
+            ],
+          );
+        },
     );
   }
+
 
   void _resetGame() {
     setState(() {

@@ -3,6 +3,17 @@ import 'package:android_game_2025/main.dart';
 import 'package:flutter/material.dart';
 import 'package:android_game_2025/player.dart';
 
+void navigateBackToGameSetupScreen(BuildContext context, GameDefinition gameDef) {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (_) => GameSetupTemplate(
+        gameDef: gameDef,
+      ),
+    ),
+  );
+}
+
 class GameSetupTemplate extends StatefulWidget {
   final GameDefinition gameDef;
 
@@ -94,7 +105,7 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => widget.gameDef.gameBuilder(_players, widget.gameDef, () {
-          Navigator.of(context).pop();
+            navigateBackToGameSetupScreen(context, widget.gameDef);
           }
         ),
       ),

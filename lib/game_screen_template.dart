@@ -68,7 +68,13 @@ class _GameScreenTemplateState extends State<GameScreenTemplate> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: widget.board,
+          child: SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: Center(
+              child: widget.board,
+            )
+          )
         ),
       ),
     );
