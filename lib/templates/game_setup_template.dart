@@ -105,10 +105,7 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => widget.gameDef.gameBuilder(_players, widget.gameDef, () {
-            navigateBackToGameSetupScreen(context, widget.gameDef);
-          }
-        ),
+        builder: (_) => widget.gameDef.gameBuilder(_players, widget.gameDef),
       ),
     );
   }
