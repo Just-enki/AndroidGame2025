@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'games/connect_four.dart';
 import 'games/tictactoe.dart';
+import 'games/memory.dart';
 import 'templates/game_setup_template.dart';
 import 'templates/game_definition.dart';
 
@@ -16,6 +17,7 @@ class ButtonList extends StatelessWidget {
     final games = <GameDefinition>[
       TicTacToe.gameDef,
       ConnectFour.gameDef,
+      Memory.gameDef
       // add more games here...
     ];
     return ListView.builder(

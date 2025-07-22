@@ -54,10 +54,10 @@ class _GameScreenTemplateState extends State<GameScreenTemplate> {
         title: const Text('Spiel beenden?'),
         content: const Text('Bist du sicher, dass du das laufende Spiel verlassen möchtest?'),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Abbrechen')),
+          TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(), child: const Text('Abbrechen')),
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context, rootNavigator: true).pop();
               navigateToGameSetupScreen(context, widget.gameDefinition);
             },
             child: const Text('Ja, beenden'),
