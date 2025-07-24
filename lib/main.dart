@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'games/connect_four.dart';
-import 'games/tictactoe.dart';
-import 'games/memory.dart';
+import 'games/connect_four/connect_four.dart';
+import 'games/tictactoe/tictactoe.dart';
+import 'games/memory/memory.dart';
 import 'templates/game_setup_template.dart';
-import 'templates/game_definition.dart';
+import 'helper/game_definition.dart';
 
 
 void main() => runApp(const MainPage());
@@ -30,9 +30,10 @@ class ButtonList extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => GameSetupTemplate(
-                    gameDef: game,
-                  ),
+                  builder: (_) =>
+                      GameSetupTemplate(
+                        gameDef: game,
+                      ),
                 ),
               );
             },
@@ -51,15 +52,15 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     const String appTitle = 'Game Selection';
     return MaterialApp(
-      title: appTitle,
-      home: Scaffold(
-        appBar: AppBar(title: const Text(appTitle)),
-        body: const Center(
-          child: ButtonList(
-            key: Key('buttonList'),
+        title: appTitle,
+        home: Scaffold(
+          appBar: AppBar(title: const Text(appTitle)),
+          body: const Center(
+            child: ButtonList(
+              key: Key('buttonList'),
+            ),
           ),
-        ),
-      )
+        )
     );
   }
 }

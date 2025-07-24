@@ -1,8 +1,9 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import '../templates/game_screen_template.dart';
-import '../templates/player.dart';
-import '../templates/game_definition.dart';
+
+import '../../helper/utils.dart';
+import '../../templates/game_screen_template.dart';
+import '../../helper/player.dart';
+import '../../helper/game_definition.dart';
 
 
 class Memory extends StatefulWidget {
@@ -36,6 +37,7 @@ class _MemoryState extends State<Memory> {
   int matchedPairs = 0;
 
   List<Player> get players => widget.players;
+
   Player get currentPlayer => players[currentPlayerIndex];
   String? winner;
 
@@ -62,15 +64,16 @@ class _MemoryState extends State<Memory> {
   @override
   void initState() {
     super.initState();
-    playerScores = List.generate(widget.players.length, (index) => 0 );
-    currentPlayerIndex = Random().nextInt(widget.players.length);
+    playerScores = List.generate(widget.players.length, (index) => 0);
+    currentPlayerIndex = getRandomStartPlayerIndexFromListOfPlayer(players);
 
     _initializeGame();
-
   }
+
   void _initializeGame() {
     // shuffle
-    final shuffledPairs = List.from(imagePairs)..shuffle();
+    final shuffledPairs = List.from(imagePairs)
+      ..shuffle();
 
     // 4x4 board and fills with img
     board = List.generate(4, (i) =>
@@ -81,8 +84,6 @@ class _MemoryState extends State<Memory> {
     firstSelectedRow = null;
     firstSelectedCol = null;
     matchedPairs = 0;
-//    playerScores = [0, 0];
-//    currentPlayerIndex = 0;
     winner = null;
     inProgress = false;
   }
@@ -95,6 +96,7 @@ class _MemoryState extends State<Memory> {
       widget.players,
     );
   }
+
   void _handleTap(int row, int col) {
     // Ignore if card is revealed, move in progress or winner
     if (revealed[row][col] || inProgress || winner != null) {
@@ -136,7 +138,8 @@ class _MemoryState extends State<Memory> {
               firstSelectedRow = null;
               firstSelectedCol = null;
 
-              currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+              currentPlayerIndex = getNextPlayerIndexFromListOfPlayer(
+                  currentPlayerIndex, players);
 
               inProgress = false;
             });
@@ -147,27 +150,10 @@ class _MemoryState extends State<Memory> {
   }
 
   void _determineWinner() {
-    int maxScore = 0;
-    List<int>maxScoreIndex = [];
-    // singleplayer
-    if (players.length == 1) {
-      winner = players[0].name;
-      return;
-    }
-    // multiple players
-    for (var i = 0; i < playerScores.length; i++) {
-      if (playerScores[i] == maxScore) {
-        maxScoreIndex.add(i);
-      }
-      // checks fo highest score index
-      else if (playerScores[i] > maxScore) {
-        maxScore = playerScores[i];
-        maxScoreIndex = [i];
-      }
-    }
-    //winner.incrementScore()
-    for (var j = 0; j < maxScoreIndex.length; j++ ) {
-      players[maxScoreIndex[j]].incrementScore();
+    List<int> winners = getWinnersFromScores(playerScores);
+
+    for (var j = 0; j < winners.length; j++) {
+      players[winners[j]].incrementScore();
     }
   }
 
@@ -179,7 +165,8 @@ class _MemoryState extends State<Memory> {
         double margin = 4;
         double borderWidth = 2;
         double boardSize = constraints.maxHeight - buttonHeight;
-        boardSize = boardSize > constraints.maxWidth ? constraints.maxWidth : boardSize;
+        boardSize =
+        boardSize > constraints.maxWidth ? constraints.maxWidth : boardSize;
 
         double cellSize = (boardSize - (margin * 2) * 4) / 4;
 
@@ -189,34 +176,38 @@ class _MemoryState extends State<Memory> {
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: List.generate(4, (i) => Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(4, (j) {
-                      return GestureDetector(
-                        onTap: () => _handleTap(i, j),
-                        child: Container(
-                          width: cellSize,
-                          height: cellSize,
-                          margin: EdgeInsets.all(margin),
-                          decoration: BoxDecoration(
-                            color: revealed[i][j] ? Colors.white : Colors.blue,
-                            border: Border.all(color: Colors.black, width: borderWidth),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: revealed[i][j]
-                                ? Image.asset(
-                              board[i][j],
-                              fit: BoxFit.contain,
-                              width: cellSize * 0.8,
-                              height: cellSize * 0.8,
-                            )
-                                : const Icon(Icons.question_mark, color: Colors.white),
-                          ),
-                        ),
-                      );
-                    }),
-                  )),
+                  children: List.generate(4, (i) =>
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: List.generate(4, (j) {
+                          return GestureDetector(
+                            onTap: () => _handleTap(i, j),
+                            child: Container(
+                              width: cellSize,
+                              height: cellSize,
+                              margin: EdgeInsets.all(margin),
+                              decoration: BoxDecoration(
+                                color: revealed[i][j] ? Colors.white : Colors
+                                    .blue,
+                                border: Border.all(
+                                    color: Colors.black, width: borderWidth),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Center(
+                                child: revealed[i][j]
+                                    ? Image.asset(
+                                  board[i][j],
+                                  fit: BoxFit.contain,
+                                  width: cellSize * 0.8,
+                                  height: cellSize * 0.8,
+                                )
+                                    : const Icon(
+                                    Icons.question_mark, color: Colors.white),
+                              ),
+                            ),
+                          );
+                        }),
+                      )),
                 ),
               ),
             ),
@@ -225,7 +216,8 @@ class _MemoryState extends State<Memory> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Winner: $winner!',
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
             SizedBox(
@@ -252,7 +244,8 @@ class _MemoryState extends State<Memory> {
   Widget build(BuildContext context) {
     return GameScreenTemplate(
       players: widget.players,
-      currentPlayerNameFunction: () => '${currentPlayer.name} Paare: ${playerScores[currentPlayerIndex]}',
+      currentPlayerNameFunction: () => '${currentPlayer
+          .name} Paare: ${playerScores[currentPlayerIndex]}',
       gameDefinition: Memory.gameDef,
       board: _buildBoard(),
     );

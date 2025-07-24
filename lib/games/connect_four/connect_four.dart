@@ -1,9 +1,9 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 
-import '../templates/game_screen_template.dart';
-import '../templates/player.dart';
-import '../templates/game_definition.dart';
+import '../../helper/utils.dart';
+import '../../helper/player.dart';
+import '../../templates/game_screen_template.dart';
+import '../../helper/game_definition.dart';
 
 class ConnectFour extends StatefulWidget {
   final List<Player> players;
@@ -31,14 +31,17 @@ class _ConnectFourState extends State<ConnectFour> {
   Player? winner;
 
   List<Player> get players => widget.players;
+
   Player get currentPlayer => players[currentPlayerIndex];
-  Color get currentColor => currentPlayerIndex == 0 ? Colors.red : Colors.yellow;
+
+  Color get currentColor =>
+      currentPlayerIndex == 0 ? Colors.red : Colors.yellow;
 
   @override
   void initState() {
     super.initState();
     board = List.generate(rows, (_) => List.filled(columns, null));
-    currentPlayerIndex = Random().nextInt(players.length);
+    currentPlayerIndex = getRandomStartPlayerIndexFromListOfPlayer(players);
   }
 
   void _resetGame() {
@@ -68,7 +71,7 @@ class _ConnectFourState extends State<ConnectFour> {
             winner = currentPlayer;
             _endGame();
           } else {
-            currentPlayerIndex = (currentPlayerIndex + 1) % 2;
+            getNextPlayerIndexFromListOfPlayer(currentPlayerIndex, players);
           }
         });
         return;
@@ -77,18 +80,23 @@ class _ConnectFourState extends State<ConnectFour> {
   }
 
   bool _checkWin(int row, int col, Color color) {
-    return _countInDirection(row, col, 0, 1, color) + _countInDirection(row, col, 0, -1, color) > 2 || // horizontal
+    return _countInDirection(row, col, 0, 1, color) +
+        _countInDirection(row, col, 0, -1, color) > 2 || // horizontal
         _countInDirection(row, col, 1, 0, color) > 2 || // vertical
-        _countInDirection(row, col, 1, 1, color) + _countInDirection(row, col, -1, -1, color) > 2 || // diagonal right
-        _countInDirection(row, col, 1, -1, color) + _countInDirection(row, col, -1, 1, color) > 2; // diagonal left
+        _countInDirection(row, col, 1, 1, color) +
+            _countInDirection(row, col, -1, -1, color) > 2 || // diagonal right
+        _countInDirection(row, col, 1, -1, color) +
+            _countInDirection(row, col, -1, 1, color) > 2; // diagonal left
   }
 
-  int _countInDirection(int row, int col, int rowDelta, int colDelta, Color color) {
+  int _countInDirection(int row, int col, int rowDelta, int colDelta,
+      Color color) {
     int count = 0;
     int r = row + rowDelta;
     int c = col + colDelta;
 
-    while (r >= 0 && r < rows && c >= 0 && c < columns && board[r][c] == color) {
+    while (r >= 0 && r < rows && c >= 0 && c < columns &&
+        board[r][c] == color) {
       count++;
       r += rowDelta;
       c += colDelta;
@@ -98,7 +106,7 @@ class _ConnectFourState extends State<ConnectFour> {
   }
 
   String _getPlayerColorName(Color color) {
-     return color == Colors.red ? "Rot" : "Gelb";
+    return color == Colors.red ? "Rot" : "Gelb";
   }
 
   Widget _buildCell(Color? color) {
@@ -121,12 +129,15 @@ class _ConnectFourState extends State<ConnectFour> {
         const double restartButtonHeight = 60;
         const double cellMargin = 2;
 
-        // Determine the max size that the board can be (based on smallest dimension)
+        // Determine the max size that the board can be
+        // based on smallest dimension
         double availableHeight = constraints.maxHeight - restartButtonHeight;
         double availableWidth = constraints.maxWidth;
 
-        double cellWidth = (availableWidth - columns * cellMargin * 2) / columns;
-        double cellHeight = (availableHeight - (rows + 1) * cellMargin * 2) / (rows + 1);
+        double cellWidth = (availableWidth - columns * cellMargin * 2) /
+            columns;
+        double cellHeight = (availableHeight - (rows + 1) * cellMargin * 2) /
+            (rows + 1);
         double cellSize = cellWidth < cellHeight ? cellWidth : cellHeight;
 
         return Column(
@@ -150,7 +161,8 @@ class _ConnectFourState extends State<ConnectFour> {
                               color: Colors.blueAccent,
                               border: Border.all(color: Colors.black),
                             ),
-                            child: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                            child: const Icon(
+                                Icons.arrow_drop_down, color: Colors.white),
                           ),
                         );
                       }),
@@ -189,7 +201,6 @@ class _ConnectFourState extends State<ConnectFour> {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {

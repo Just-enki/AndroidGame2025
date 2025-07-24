@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'game_setup_template.dart';
-import 'game_definition.dart';
-import 'player.dart';
+import '../helper/game_definition.dart';
+import '../helper/player.dart';
 
 class GameOverTemplate extends StatelessWidget {
   final GameDefinition gameDef;
@@ -17,9 +17,10 @@ class GameOverTemplate extends StatelessWidget {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => GameSetupTemplate(
-          gameDef: gameDef,
-        ),
+        builder: (_) =>
+            GameSetupTemplate(
+              gameDef: gameDef,
+            ),
       ),
     );
   }
@@ -79,13 +80,14 @@ class Leaderboard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: players.map(
-            (player) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: Text(
-            '${player.name}:   ${player.score} points',
-            style: const TextStyle(fontSize: 18),
-          ),
-        ),
+            (player) =>
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Text(
+                '${player.name}:   ${player.score} points',
+                style: const TextStyle(fontSize: 18),
+              ),
+            ),
       ).toList(),
     );
   }

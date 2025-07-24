@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
-import 'game_definition.dart';
+import '../helper/game_definition.dart';
 import 'game_over_template.dart';
 import 'game_setup_template.dart';
-import 'player.dart';
+import '../helper/player.dart';
 
-void navigateToGameOverScreen(BuildContext context, GameDefinition gameDef, List<Player> players) {
+void navigateToGameOverScreen(BuildContext context, GameDefinition gameDef,
+    List<Player> players) {
   Navigator.of(context).pushReplacement(
     MaterialPageRoute(
-      builder: (_) => GameOverTemplate(
-        gameDef: gameDef,
-        players: players,
-      ),
+      builder: (_) =>
+          GameOverTemplate(
+            gameDef: gameDef,
+            players: players,
+          ),
     ),
   );
 }
@@ -19,9 +21,10 @@ void navigateToGameOverScreen(BuildContext context, GameDefinition gameDef, List
 void navigateToGameSetupScreen(BuildContext context, GameDefinition gameDef) {
   Navigator.of(context).pushReplacement(
     MaterialPageRoute(
-      builder: (_) => GameSetupTemplate(
-        gameDef: gameDef,
-      ),
+      builder: (_) =>
+          GameSetupTemplate(
+            gameDef: gameDef,
+          ),
     ),
   );
 }
@@ -50,20 +53,25 @@ class _GameScreenTemplateState extends State<GameScreenTemplate> {
   void _showExitConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Spiel beenden?'),
-        content: const Text('Bist du sicher, dass du das laufende Spiel verlassen möchtest?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(), child: const Text('Abbrechen')),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context, rootNavigator: true).pop();
-              navigateToGameSetupScreen(context, widget.gameDefinition);
-            },
-            child: const Text('Ja, beenden'),
+      builder: (_) =>
+          AlertDialog(
+            title: const Text('Spiel beenden?'),
+            content: const Text(
+                'Bist du sicher, '
+                    'dass du das laufende Spiel verlassen möchtest?'),
+            actions: [
+              TextButton(onPressed: () =>
+                  Navigator.of(context, rootNavigator: true).pop(),
+                  child: const Text('Abbrechen')),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  navigateToGameSetupScreen(context, widget.gameDefinition);
+                },
+                child: const Text('Ja, beenden'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -81,14 +89,14 @@ class _GameScreenTemplateState extends State<GameScreenTemplate> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: Center(
-              child: widget.board,
+            padding: const EdgeInsets.all(16),
+            child: SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: Center(
+                  child: widget.board,
+                )
             )
-          )
         ),
       ),
     );

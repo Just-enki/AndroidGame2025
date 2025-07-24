@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 
-import 'game_definition.dart';
+import '../helper/game_definition.dart';
 import '../main.dart';
-import 'player.dart';
+import '../helper/player.dart';
 
-void navigateBackToGameSetupScreen(BuildContext context, GameDefinition gameDef) {
+void navigateBackToGameSetupScreen(BuildContext context,
+    GameDefinition gameDef) {
   Navigator.pushReplacement(
     context,
     MaterialPageRoute(
-      builder: (_) => GameSetupTemplate(
-        gameDef: gameDef,
-      ),
+      builder: (_) =>
+          GameSetupTemplate(
+            gameDef: gameDef,
+          ),
     ),
   );
 }
@@ -44,7 +46,7 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
     }
   }
 
-    void _goToMainPage(BuildContext context) {
+  void _goToMainPage(BuildContext context) {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -76,7 +78,8 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
         _players.removeAt(index);
       });
     } else {
-      _showMessage("At least ${widget.gameDef.minPlayers} players are required.");
+      _showMessage(
+          "At least ${widget.gameDef.minPlayers} players are required.");
     }
   }
 
@@ -88,13 +91,16 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
         .toList();
 
 
-    if (playerNames.toSet().length < playerNames.length) {
+    if (playerNames
+        .toSet()
+        .length < playerNames.length) {
       _showMessage("Spielernamen müssen eindeutig sein.");
       return;
     }
 
     if (playerNames.length < widget.gameDef.minPlayers) {
-      _showMessage("Mindestens ${widget.gameDef.minPlayers} Spieler erforderlich.");
+      _showMessage(
+          "Mindestens ${widget.gameDef.minPlayers} Spieler erforderlich.");
       return;
     }
 
@@ -161,7 +167,7 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
               itemBuilder: (context, index) {
                 return Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   child: Row(
                     children: [
                       Expanded(
