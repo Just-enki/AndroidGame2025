@@ -32,5 +32,5 @@ class Player {
   /// Used for debugging, logging, or simple display of the player's stats.
   /// Example output: "Alice: 2 points"
   @override
-  String toString() => '$name: $score points';
+  String toString() => '$name: $score Punkte';
 }
