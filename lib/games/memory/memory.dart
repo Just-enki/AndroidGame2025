@@ -7,8 +7,11 @@ import '../../helper/game_definition.dart';
 import 'memory_logic.dart';
 import 'memory_board.dart';
 
+/// Stateful widget representing the Memory game screen
 class Memory extends StatefulWidget {
   final List<Player> players;
+
+  /// Static game definition used for registration and navigation
   static final GameDefinition gameDef = GameDefinition(
     name: 'Memory',
     minPlayers: 1,
@@ -23,21 +26,23 @@ class Memory extends StatefulWidget {
 }
 
 class _MemoryState extends State<Memory> {
-  late List<List<String>> board;
-  late List<List<bool>> revealed;
-  int? firstSelectedRow;
-  int? firstSelectedCol;
-  int currentPlayerIndex = 0;
-  late List<int> playerScores;
+  // Game state variables
+  late List<List<String>> board; // 4x4 board with image paths
+  late List<List<bool>> revealed; // whether each cell is revealed
+  int? firstSelectedRow; // first card row index
+  int? firstSelectedCol; // first card col index
+  int currentPlayerIndex = 0; // index of the current player
+  late List<int> playerScores; // scores for each player
 
-  bool inProgress = false;
-  int matchedPairs = 0;
+  bool inProgress = false; // whether two cards are being processed
+  int matchedPairs = 0; // number of matched pairs found
 
   List<Player> get players => widget.players;
-
   Player get currentPlayer => players[currentPlayerIndex];
-  String? winner;
 
+  String? winner; // name of the winner (if any)
+
+  /// List of 8 unique image pairs for the game
   final List<String> imagePairs = [
     'assets/data_memory/images/black.png',
     'assets/data_memory/images/black.png',
@@ -66,14 +71,13 @@ class _MemoryState extends State<Memory> {
     _initializeGame();
   }
 
+  /// Initializes or resets the game board and state
   void _initializeGame() {
-    // shuffle
     final shuffledPairs = List.from(imagePairs)..shuffle();
 
-    // 4x4 board and fills with img
     board = List.generate(
       4,
-      (i) => List.generate(4, (j) => shuffledPairs[i * 4 + j]),
+          (i) => List.generate(4, (j) => shuffledPairs[i * 4 + j]),
     );
 
     revealed = List.generate(4, (_) => List.filled(4, false));
@@ -84,19 +88,25 @@ class _MemoryState extends State<Memory> {
     inProgress = false;
   }
 
+  /// Ends the game and navigates to game over screen
   void _endGame() {
     _resetGame();
     navigateToGameOverScreen(context, Memory.gameDef, widget.players);
   }
 
+  /// Handles logic for when the second card is tapped
   void _handleSecondTap(row, col) {
     inProgress = true;
+
     if (checkForMatch(board, row, col, firstSelectedRow, firstSelectedCol) == true) {
+      // Match found
       matchedPairs = incrementScore(
         playerScores,
         currentPlayerIndex,
         matchedPairs,
       );
+
+      // Update game state and check if game is over
       bool allCardsRevealed = handleMatch(
         board,
         row,
@@ -113,49 +123,52 @@ class _MemoryState extends State<Memory> {
         _endGame();
       }
 
+      // Reset selection
       firstSelectedRow = null;
       firstSelectedCol = null;
       inProgress = false;
-    }
-    else {
-      /// no match, hide cards after delay
+    } else {
+      // No match: hide cards after short delay and switch turn
       Future.delayed(const Duration(milliseconds: 1000), () {
         setState(() {
           revealed[row][col] = false;
           revealed[firstSelectedRow!][firstSelectedCol!] = false;
+
           firstSelectedRow = null;
           firstSelectedCol = null;
+
           currentPlayerIndex = getNextPlayerIndexFromListOfPlayer(
             currentPlayerIndex,
             players,
           );
+
           inProgress = false;
         });
       });
     }
   }
 
+  /// Handles a single card tap
   void _handleTap(int row, int col) {
-    // Ignore if card is revealed, move in progress or winner
-    if (revealed[row][col] || inProgress || winner != null) {
-      return;
-    }
+    // Ignore taps if card already revealed, in progress, or game is over
+    if (revealed[row][col] || inProgress || winner != null) return;
 
     setState(() {
       revealed[row][col] = true;
 
-      // first card selected
+      // First card selected
       if (firstSelectedRow == null) {
         firstSelectedRow = row;
         firstSelectedCol = col;
       }
-      // second card selected
+      // Second card selected
       else {
         _handleSecondTap(row, col);
       }
     });
   }
 
+  /// Resets the game board and state
   void _resetGame() {
     setState(() {
       _initializeGame();
@@ -167,7 +180,7 @@ class _MemoryState extends State<Memory> {
     return GameScreenTemplate(
       players: widget.players,
       currentPlayerNameFunction: () =>
-          '${currentPlayer.name} Paare: ${playerScores[currentPlayerIndex]}',
+      '${currentPlayer.name} Paare: ${playerScores[currentPlayerIndex]}',
       gameDefinition: Memory.gameDef,
       board: MemoryBoard(
         board: board,
