@@ -16,11 +16,7 @@ class Memory extends StatefulWidget {
     gameBuilder: (players, gameDef) => Memory(players: players),
   );
 
-
-  const Memory({
-    super.key,
-    required this.players,
-  });
+  const Memory({super.key, required this.players});
 
   @override
   State<Memory> createState() => _MemoryState();
@@ -41,7 +37,6 @@ class _MemoryState extends State<Memory> {
 
   Player get currentPlayer => players[currentPlayerIndex];
   String? winner;
-
 
   final List<String> imagePairs = [
     'assets/data_memory/images/black.png',
@@ -73,12 +68,12 @@ class _MemoryState extends State<Memory> {
 
   void _initializeGame() {
     // shuffle
-    final shuffledPairs = List.from(imagePairs)
-      ..shuffle();
+    final shuffledPairs = List.from(imagePairs)..shuffle();
 
     // 4x4 board and fills with img
-    board = List.generate(4, (i) =>
-        List.generate(4, (j) => shuffledPairs[i * 4 + j])
+    board = List.generate(
+      4,
+      (i) => List.generate(4, (j) => shuffledPairs[i * 4 + j]),
     );
 
     revealed = List.generate(4, (_) => List.filled(4, false));
@@ -91,11 +86,53 @@ class _MemoryState extends State<Memory> {
 
   void _endGame() {
     _resetGame();
-    navigateToGameOverScreen(
-      context,
-      Memory.gameDef,
-      widget.players,
-    );
+    navigateToGameOverScreen(context, Memory.gameDef, widget.players);
+  }
+
+  void _handleSecondTap(row, col) {
+    inProgress = true;
+    if (checkForMatch(board, row, col, firstSelectedRow, firstSelectedCol) == true) {
+      matchedPairs = incrementScore(
+        playerScores,
+        currentPlayerIndex,
+        matchedPairs,
+      );
+      bool allCardsRevealed = handleMatch(
+        board,
+        row,
+        col,
+        firstSelectedRow,
+        firstSelectedCol,
+        matchedPairs,
+        players,
+        playerScores,
+        currentPlayerIndex,
+      );
+
+      if (allCardsRevealed == true) {
+        _endGame();
+      }
+
+      firstSelectedRow = null;
+      firstSelectedCol = null;
+      inProgress = false;
+    }
+    else {
+      /// no match, hide cards after delay
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        setState(() {
+          revealed[row][col] = false;
+          revealed[firstSelectedRow!][firstSelectedCol!] = false;
+          firstSelectedRow = null;
+          firstSelectedCol = null;
+          currentPlayerIndex = getNextPlayerIndexFromListOfPlayer(
+            currentPlayerIndex,
+            players,
+          );
+          inProgress = false;
+        });
+      });
+    }
   }
 
   void _handleTap(int row, int col) {
@@ -114,44 +151,10 @@ class _MemoryState extends State<Memory> {
       }
       // second card selected
       else {
-        inProgress = true;
-
-        // check if match
-
-        if (board[row][col] == board[firstSelectedRow!][firstSelectedCol!]) {
-          playerScores[currentPlayerIndex]++;
-          matchedPairs++;
-
-          // check gameover
-          if (matchedPairs == 8) {
-            determineWinner(players, playerScores);
-            _endGame();
-          }
-
-          firstSelectedRow = null;
-          firstSelectedCol = null;
-          inProgress = false;
-        }
-        else {
-          // no match, hide after delay
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            setState(() {
-              revealed[row][col] = false;
-              revealed[firstSelectedRow!][firstSelectedCol!] = false;
-              firstSelectedRow = null;
-              firstSelectedCol = null;
-
-              currentPlayerIndex = getNextPlayerIndexFromListOfPlayer(
-                  currentPlayerIndex, players);
-
-              inProgress = false;
-            });
-          });
-        }
+        _handleSecondTap(row, col);
       }
     });
   }
-
 
   void _resetGame() {
     setState(() {
@@ -164,7 +167,7 @@ class _MemoryState extends State<Memory> {
     return GameScreenTemplate(
       players: widget.players,
       currentPlayerNameFunction: () =>
-      '${currentPlayer.name} Paare: ${playerScores[currentPlayerIndex]}',
+          '${currentPlayer.name} Paare: ${playerScores[currentPlayerIndex]}',
       gameDefinition: Memory.gameDef,
       board: MemoryBoard(
         board: board,
@@ -175,5 +178,4 @@ class _MemoryState extends State<Memory> {
       ),
     );
   }
-
 }
