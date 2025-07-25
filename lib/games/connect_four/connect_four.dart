@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 
-import '../../helper/utils.dart';
-import '../../helper/player.dart';
-import '../../templates/game_screen_template.dart';
-import '../../helper/game_definition.dart';
+import 'connect_four_logic.dart';
+import 'connect_four_board.dart';
+import 'connect_four_buttons.dart';
 
+import '../../helper/game_definition.dart';
+import '../../helper/player.dart';
+import '../../helper/utils.dart';
+import '../../templates/game_screen_template.dart';
+
+/// The `ConnectFour` widget serves as the main entry point for the Connect Four
+/// game screen. It initializes game settings, manages player state, and renders
+/// the game board and controls.
 class ConnectFour extends StatefulWidget {
   final List<Player> players;
+
+  /// Game definition metadata for Connect Four,
+  /// including the name and the valid player range.
   static final GameDefinition gameDef = GameDefinition(
     name: 'ConnectFour',
     minPlayers: 2,
@@ -14,46 +24,59 @@ class ConnectFour extends StatefulWidget {
     gameBuilder: (players, gameDef) => ConnectFour(players: players),
   );
 
-  const ConnectFour({
-    super.key,
-    required this.players,
-  });
+  /// Constructor for the ConnectFour widget.
+  /// Requires a list of exactly two players.
+  const ConnectFour({required this.players, super.key});
 
   @override
   State<ConnectFour> createState() => _ConnectFourState();
 }
 
+/// Internal state class for `ConnectFour`.
+/// Handles game state management, board updates,
+/// turn handling and win detection.
 class _ConnectFourState extends State<ConnectFour> {
   static const int rows = 6;
   static const int columns = 7;
-  late List<List<Color?>> board;
-  int currentPlayerIndex = 0;
-  Player? winner;
 
+  late List<List<String>> board; // 2D board array to store player moves
+  late int currentPlayerIndex; // Index of the current active player
+
+  // Getter to retrieve the list of players
   List<Player> get players => widget.players;
 
+  // Getter for the current player
   Player get currentPlayer => players[currentPlayerIndex];
 
+  // Getter for the current player color (red for player 0, yellow for player 1)
   Color get currentColor =>
       currentPlayerIndex == 0 ? Colors.red : Colors.yellow;
+
+  // Converts the player's color to a text symbol (e.g., "🔴" or "🟡")
+  String get currentSymbol => convertColorToSymbol(currentColor);
 
   @override
   void initState() {
     super.initState();
-    board = List.generate(rows, (_) => List.filled(columns, null));
-    currentPlayerIndex = getRandomStartPlayerIndexFromListOfPlayer(players);
+    // Initialize the board and set a random player to start
+    _resetGame();
   }
 
+  /// Initializes the board to empty cells and randomly picks
+  /// the starting player.
   void _resetGame() {
     setState(() {
-      board = List.generate(rows, (_) => List.filled(columns, null));
-      currentPlayerIndex = 0;
-      winner = null;
+      board = List.generate(rows, (_) => List.filled(columns, ''));
+      currentPlayerIndex = getRandomStartPlayerIndexFromListOfPlayer(players);
     });
   }
 
+  /// Resets the board and navigates to the game over screen,
+  /// passing the players and game definition.
   void _endGame() {
     _resetGame();
+
+    // Navigates to game over screen using shared utility function
     navigateToGameOverScreen(
       context,
       ConnectFour.gameDef,
@@ -61,153 +84,111 @@ class _ConnectFourState extends State<ConnectFour> {
     );
   }
 
-  void _insertChip(int column) {
-    for (int row = rows - 1; row >= 0; row--) {
-      if (board[row][column] == null) {
-        setState(() {
-          board[row][column] = currentColor;
-          if (_checkWin(row, column, currentColor)) {
-            currentPlayer.score++;
-            winner = currentPlayer;
-            _endGame();
-          } else {
+  /// Handles a player's move when a column is selected.
+  /// Determines available row, checks for a win or draw,
+  /// updates the board and changes player turn.
+  void _handleColumnSelected(int col) {
+    int row = getAvailableRow(board, col);
+    if (row == -1) return; // Column is full, do nothing
+
+    setState(() {
+      final symbol = currentSymbol;
+      board[row][col] = symbol;
+
+      // Check if the current move wins the game
+      if (checkConnectFourWinner(board, symbol)) {
+        currentPlayer.score++;
+        _endGame();
+      } else if (isTwoDimensionalArrayFull(board)) {
+        // Game is a draw
+        _endGame();
+      } else {
+        // Proceed to next player's turn
+        currentPlayerIndex =
             getNextPlayerIndexFromListOfPlayer(currentPlayerIndex, players);
-          }
-        });
-        return;
       }
-    }
+    });
   }
 
-  bool _checkWin(int row, int col, Color color) {
-    return _countInDirection(row, col, 0, 1, color) +
-        _countInDirection(row, col, 0, -1, color) > 2 || // horizontal
-        _countInDirection(row, col, 1, 0, color) > 2 || // vertical
-        _countInDirection(row, col, 1, 1, color) +
-            _countInDirection(row, col, -1, -1, color) > 2 || // diagonal right
-        _countInDirection(row, col, 1, -1, color) +
-            _countInDirection(row, col, -1, 1, color) > 2; // diagonal left
-  }
-
-  int _countInDirection(int row, int col, int rowDelta, int colDelta,
-      Color color) {
-    int count = 0;
-    int r = row + rowDelta;
-    int c = col + colDelta;
-
-    while (r >= 0 && r < rows && c >= 0 && c < columns &&
-        board[r][c] == color) {
-      count++;
-      r += rowDelta;
-      c += colDelta;
-    }
-
-    return count;
-  }
-
-  String _getPlayerColorName(Color color) {
-    return color == Colors.red ? "Rot" : "Gelb";
-  }
-
-  Widget _buildCell(Color? color) {
-    Color circleColor = color ?? Colors.grey.shade300;
-    return Container(
-      margin: const EdgeInsets.all(2),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: circleColor,
-        border: Border.all(color: Colors.black26),
-      ),
-      width: 40,
-      height: 40,
-    );
-  }
-
+  /// Builds the Connect Four board and the interaction UI.
+  /// This includes column selection buttons, the grid, and the restart button.
   Widget _buildBoard() {
     return LayoutBuilder(
-      builder: (context, constraints) {
-        const double restartButtonHeight = 60;
-        const double cellMargin = 2;
+        builder: (context, constraints) {
+          // Constants for layout
+          const double restartButtonHeight = 60;
+          const double cellMargin = 2;
 
-        // Determine the max size that the board can be
-        // based on smallest dimension
-        double availableHeight = constraints.maxHeight - restartButtonHeight;
-        double availableWidth = constraints.maxWidth;
+          // Calculate available space for the game board
+          double availableHeight = constraints.maxHeight - restartButtonHeight;
+          double availableWidth = constraints.maxWidth;
 
-        double cellWidth = (availableWidth - columns * cellMargin * 2) /
-            columns;
-        double cellHeight = (availableHeight - (rows + 1) * cellMargin * 2) /
-            (rows + 1);
-        double cellSize = cellWidth < cellHeight ? cellWidth : cellHeight;
+          // Determine the size of each cell to make board fit on screen
+          double cellWidth = (availableWidth - columns * cellMargin * 2) /
+              columns;
+          double cellHeight =
+              (availableHeight - (rows + 1) * cellMargin * 2) / (rows + 1);
+          double cellSize = cellWidth < cellHeight ? cellWidth : cellHeight;
 
-        return Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Top clickable row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(columns, (col) {
-                        return GestureDetector(
-                          onTap: () => _insertChip(col),
-                          child: Container(
-                            width: cellSize,
-                            height: cellSize,
-                            margin: const EdgeInsets.all(cellMargin),
-                            decoration: BoxDecoration(
-                              color: Colors.blueAccent,
-                              border: Border.all(color: Colors.black),
-                            ),
-                            child: const Icon(
-                                Icons.arrow_drop_down, color: Colors.white),
-                          ),
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: 6),
-                    // Game grid
-                    Column(
-                      children: List.generate(rows, (row) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(columns, (col) {
-                            return Container(
-                              width: cellSize,
-                              height: cellSize,
-                              margin: const EdgeInsets.all(cellMargin),
-                              child: _buildCell(board[row][col]),
-                            );
-                          }),
-                        );
-                      }),
-                    ),
-                  ],
+          return Column(
+            children: [
+              // The top part contains the column selector buttons
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+
+                      /// Row of tappable buttons for each column.
+                      /// Players tap to drop a disc in a column.
+                      ConnectFourButtons(
+                        columnCount: columns,
+                        cellSize: cellSize,
+                        cellMargin: cellMargin,
+                        onColumnSelected: _handleColumnSelected,
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      /// The main grid of the Connect Four board,
+                      /// showing the current state with colored circles.
+                      Expanded(
+                        child: ConnectFourBoard(
+                          board: board,
+                          rowCount: rows,
+                          columnCount: columns,
+                          cellSize: cellSize,
+                          cellMargin: cellMargin,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: restartButtonHeight,
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _resetGame,
-                child: const Text('Neustart'),
+
+              /// Restart button at the bottom of the screen.
+              /// Allows players to start a new round.
+              SizedBox(
+                height: restartButtonHeight,
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _resetGame,
+                  child: const Text('Neustart'),
+                ),
               ),
-            ),
-          ],
-        );
-      },
-    );
+            ],
+          );
+        });
   }
 
   @override
   Widget build(BuildContext context) {
+    /// Uses a shared game template to wrap the board with
+    /// a header displaying player information and turn indication.
     return GameScreenTemplate(
       players: players,
       currentPlayerNameFunction: () =>
-      '${currentPlayer.name} (${_getPlayerColorName(currentColor)})',
+      '${currentPlayer.name} (${convertColorToSymbol(currentColor)})',
       gameDefinition: ConnectFour.gameDef,
       board: _buildBoard(),
     );
