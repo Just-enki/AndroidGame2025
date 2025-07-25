@@ -35,64 +35,60 @@ class TicTacToeBoard extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Calculate dimensions and spacing for board layout
-        double restartButtonHeight = 60; // Reserved space for restart button
-        double margin = 4; // Margin between each cell
-        double borderWidth = 3; // Border thickness for cells
+        // Layout constants
+        double restartButtonHeight = 60; // Fixed height for the restart button
+        double margin = 4; // Margin around each cell
+        double borderWidth = 3; // Thickness of cell borders
 
-        // Calculate maximum available square space for the board
-        double boardSize = constraints.maxHeight - restartButtonHeight;
-        boardSize = boardSize > constraints.maxWidth
+        // Use the smaller of width or height to create a square game board.
+        // In landscape mode, subtract the button height to avoid overflow.
+        final double shortestSide = constraints.maxWidth < constraints.maxHeight
             ? constraints.maxWidth
-            : boardSize;
+            : constraints.maxHeight - restartButtonHeight - 16;
 
-        // Calculate size of each square cell based on available space and
-        // margins
-        double cellSize = (boardSize - (margin * 2) * 3) / 3;
-
-        // The overall layout is a vertical column: [Grid | Restart Button]
+        // The layout is a vertical column: [game grid] + [restart button]
         return Column(
           children: [
-            // The main 3x3 game grid
+            // The game grid occupies all remaining vertical space
             Expanded(
               child: Center(
-                child: Column(
-                  children: List.generate(3, (row) {
-                    // Each row is rendered as a Row widget with 3 cells
-                    return Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(3, (col) {
-                        return Expanded(
-                          // Ensures the cell is a square by enforcing a 1:1
-                          // aspect ratio
-                          child: AspectRatio(
-                            aspectRatio: 1,
-                            child: TicTacToeCell(
-                              // Symbol to be rendered in the cell (X, O, or
-                              // empty)
-                              value: board[row][col],
-                              cellSize: cellSize,
-                              margin: margin,
-                              borderWidth: borderWidth,
-                              // When tapped, notify the parent with cell
-                              // position
-                              onTap: () => onCellTap(row, col),
-                            ),
-                          ),
-                        );
-                      }),
-                    );
-                  }),
+                child: SizedBox(
+                  width: shortestSide,
+                  height: shortestSide,
+
+                  // Build a 3x3 grid using nested Columns and Rows
+                  child: Column(
+                    children: List.generate(3, (row) {
+                      return Expanded(
+                        child: Row(
+                          children: List.generate(3, (col) {
+                            return Expanded(
+                              child: AspectRatio(
+                                aspectRatio: 1, // ensures square shape
+                                child: TicTacToeCell(
+                                  value: board[row][col], // X, O, or ''
+                                  margin: margin, // cell spacing
+                                  borderWidth: borderWidth, // border style
+                                  onTap: () =>
+                                      onCellTap(row, col), // interaction
+                                ),
+                              ),
+                            );
+                          }),
+                        ),
+                      );
+                    }),
+                  ),
                 ),
               ),
             ),
 
-            // Restart button aligned at the bottom of the screen
+            // A button fixed at the bottom to reset the game state
             SizedBox(
               width: double.infinity,
               height: restartButtonHeight,
               child: ElevatedButton(
-                onPressed: onRestart, // Resets the game when tapped
+                onPressed: onRestart,
                 child: const Text('Neustart'),
               ),
             ),

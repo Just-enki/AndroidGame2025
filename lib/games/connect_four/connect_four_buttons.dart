@@ -10,9 +10,6 @@ class ConnectFourButtons extends StatelessWidget {
   // The total number of columns in the game board.
   final int columnCount;
 
-  // The size (width and height) of each tappable button cell.
-  final double cellSize;
-
   // The margin around each button for visual spacing.
   final double cellMargin;
 
@@ -22,7 +19,6 @@ class ConnectFourButtons extends StatelessWidget {
 
   const ConnectFourButtons({
     required this.columnCount,
-    required this.cellSize,
     required this.cellMargin,
     required this.onColumnSelected,
     super.key,
@@ -30,27 +26,37 @@ class ConnectFourButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // A horizontal row of buttons, one for each column.
-    // Players tap these buttons to place their disc in a column.
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      // Create one expandable tappable area per column
       children: List.generate(columnCount, (col) {
-        // Each button is wrapped in a GestureDetector to capture taps.
-        return GestureDetector(
-          onTap: () => onColumnSelected(col), // Notifies parent when tapped
-          child: Container(
-            width: cellSize,
-            height: cellSize,
-            margin: EdgeInsets.all(cellMargin),
-            decoration: BoxDecoration(
-              color: Colors.blueAccent, // Background color of the button
-              border: Border.all(color: Colors.black), // Black border
-            ),
-            // Icon shown in the center of the button to indicate a "drop"
-            // action
-            child: const Icon(
-              Icons.arrow_drop_down,
-              color: Colors.white,
+        return Expanded(
+          // Ensures the button is square-shaped
+          child: AspectRatio(
+            aspectRatio: 1,
+
+            // Adds uniform padding around the button area
+            child: Padding(
+              padding: EdgeInsets.all(cellMargin),
+
+              // GestureDetector wraps the button to handle tap events
+              child: GestureDetector(
+                onTap: () => onColumnSelected(col),
+                // Call callback with column index
+
+                // Visual appearance of the button
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blueAccent, // Button background color
+                    border: Border.all(color: Colors.black), // Black outline
+                  ),
+
+                  // The icon indicates a "drop" action (e.g. drop disc)
+                  child: const Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
           ),
         );

@@ -17,25 +17,22 @@ class ConnectFourCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // The cell is rendered as a circular Container with a fixed size and
-    // border.
-    // The color is determined by the game state and passed in externally.
-    return Container(
-      // Adds spacing around each cell to visually separate them
-      margin: const EdgeInsets.all(2),
+    return AspectRatio(
+      aspectRatio: 1, // Forces a 1:1 ratio to maintain a perfect square
 
-      // Defines the shape and color of the cell
-      decoration: BoxDecoration(
-        shape: BoxShape.circle, // Ensures the cell appears round
-        color: circleColor, // Fill color representing a player or empty slot
-        border: Border.all(
-          color: Colors.black26, // Light border to distinguish between cells
+      // The visual container for the cell
+      child: Container(
+        margin: const EdgeInsets.all(2), // Adds spacing between cells
+
+        // Decoration defines the round shape, color, and border of the cell
+        decoration: BoxDecoration(
+          shape: BoxShape.circle, // Makes the container a circle
+          color: circleColor, // Fills the cell with the correct color
+          border: Border.all(
+            color: Colors.black26, // Light border for subtle separation
+          ),
         ),
       ),
-
-      // Fixed size for each cell; should match the layout in the board
-      width: 40,
-      height: 40,
     );
   }
 }

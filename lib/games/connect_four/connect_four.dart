@@ -1,8 +1,7 @@
+import 'package:android_game_2025/games/connect_four/connect_four_board.dart';
 import 'package:flutter/material.dart';
 
 import 'connect_four_logic.dart';
-import 'connect_four_board.dart';
-import 'connect_four_buttons.dart';
 
 import '../../helper/game_definition.dart';
 import '../../helper/player.dart';
@@ -110,77 +109,6 @@ class _ConnectFourState extends State<ConnectFour> {
     });
   }
 
-  /// Builds the Connect Four board and the interaction UI.
-  /// This includes column selection buttons, the grid, and the restart button.
-  Widget _buildBoard() {
-    return LayoutBuilder(
-        builder: (context, constraints) {
-          // Constants for layout
-          const double restartButtonHeight = 60;
-          const double cellMargin = 2;
-
-          // Calculate available space for the game board
-          double availableHeight = constraints.maxHeight - restartButtonHeight;
-          double availableWidth = constraints.maxWidth;
-
-          // Determine the size of each cell to make board fit on screen
-          double cellWidth = (availableWidth - columns * cellMargin * 2) /
-              columns;
-          double cellHeight =
-              (availableHeight - (rows + 1) * cellMargin * 2) / (rows + 1);
-          double cellSize = cellWidth < cellHeight ? cellWidth : cellHeight;
-
-          return Column(
-            children: [
-              // The top part contains the column selector buttons
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-
-                      /// Row of tappable buttons for each column.
-                      /// Players tap to drop a disc in a column.
-                      ConnectFourButtons(
-                        columnCount: columns,
-                        cellSize: cellSize,
-                        cellMargin: cellMargin,
-                        onColumnSelected: _handleColumnSelected,
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      /// The main grid of the Connect Four board,
-                      /// showing the current state with colored circles.
-                      Expanded(
-                        child: ConnectFourBoard(
-                          board: board,
-                          rowCount: rows,
-                          columnCount: columns,
-                          cellSize: cellSize,
-                          cellMargin: cellMargin,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              /// Restart button at the bottom of the screen.
-              /// Allows players to start a new round.
-              SizedBox(
-                height: restartButtonHeight,
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _resetGame,
-                  child: const Text('Neustart'),
-                ),
-              ),
-            ],
-          );
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
     /// Uses a shared game template to wrap the board with
@@ -190,7 +118,13 @@ class _ConnectFourState extends State<ConnectFour> {
       currentPlayerNameFunction: () =>
       '${currentPlayer.name} (${convertColorToSymbol(currentColor)})',
       gameDefinition: ConnectFour.gameDef,
-      board: _buildBoard(),
+      board: ConnectFourBoard(
+        board: board,
+        rowCount: rows,
+        columnCount: columns,
+        onColumnSelected: _handleColumnSelected,
+        onRestart: _resetGame,
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'connect_four_buttons.dart';
 import 'connect_four_cell.dart';
 import 'connect_four_logic.dart';
 
@@ -22,47 +23,101 @@ class ConnectFourBoard extends StatelessWidget {
   // Total number of columns in the game grid.
   final int columnCount;
 
-  // Size of each cell (width and height will be equal).
-  final double cellSize;
+  final void Function (int) onColumnSelected;
 
-  // Margin space around each cell (used for visual spacing between them).
-  final double cellMargin;
+  // Callback triggered when the restart button is pressed.
+  final void Function() onRestart;
 
   const ConnectFourBoard({
     required this.board,
     required this.rowCount,
     required this.columnCount,
-    required this.cellSize,
-    required this.cellMargin,
+    required this.onColumnSelected,
+    required this.onRestart,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    // This widget builds the grid row by row.
-    // Each row is a horizontal `Row` widget containing multiple cells.
-    return Column(
-      children: List.generate(rowCount, (row) {
-        // Each row consists of a Row widget with one ConnectFourCell
-        // per column.
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(columnCount, (col) {
-            // Each cell is wrapped in a Container to provide size and margin.
-            // The symbol stored at board[row][col] determines the color.
-            return Container(
-              width: cellSize,
-              height: cellSize,
-              margin: EdgeInsets.all(cellMargin),
-              child: ConnectFourCell(
-                // Converts the symbol ('🔴', '🟡', or '') to a
-                // corresponding color
-                circleColor: convertSymbolToColor(board[row][col]),
+    const double restartButtonHeight = 60; // Fixed height for the
+    // restart button
+    const double cellMargin = 2; // Margin between each cell for spacing
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Determine the shortest screen side (width or height).
+        // Ensures that the board remains square and fits well in
+        // both orientations.
+        final double shortestSide = constraints.maxWidth < constraints.maxHeight
+            ? constraints.maxWidth
+            : constraints.maxHeight - restartButtonHeight - 16;
+
+        return Column(
+          children: [
+            // The main board area, including the column buttons and cell grid
+            Expanded(
+              child: Center(
+                child: SizedBox(
+                  width: shortestSide,
+                  height: shortestSide,
+
+                  // Board is structured vertically: [buttons] + [grid]
+                  child: Column(
+                    children: [
+                      // Row of tappable buttons for each column
+                      // (top of the board)
+                      ConnectFourButtons(
+                        columnCount: columnCount,
+                        cellMargin: cellMargin,
+                        onColumnSelected: onColumnSelected,
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Grid of cells representing the current game state
+                      Expanded(
+                        child: Column(
+                          children: List.generate(rowCount, (row) {
+                            return Expanded(
+                              child: Row(
+                                children: List.generate(columnCount, (col) {
+                                  return Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(cellMargin),
+
+                                      // Render each cell based on its symbol
+                                      // ('🔴', '🟡', or '')
+                                      child: ConnectFourCell(
+                                        circleColor: convertSymbolToColor(
+                                          board[row][col],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            );
-          }),
+            ),
+
+            // Restart button fixed at the bottom of the screen
+            SizedBox(
+              width: double.infinity,
+              height: restartButtonHeight,
+              child: ElevatedButton(
+                onPressed: onRestart,
+                child: const Text('Neustart'),
+              ),
+            ),
+          ],
         );
-      }),
+      },
     );
   }
 }
