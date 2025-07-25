@@ -84,7 +84,7 @@ class Leaderboard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: Text(
-                '${player.name}:   ${player.score} points',
+                '${player.name}:   ${player.score} Punkte',
                 style: const TextStyle(fontSize: 18),
               ),
             ),

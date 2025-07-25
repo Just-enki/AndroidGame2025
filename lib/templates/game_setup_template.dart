@@ -199,7 +199,7 @@ class _GameSetupTemplateState extends State<GameSetupTemplate> {
               child: ElevatedButton(
                 onPressed: _startGame,
                 child: const Text(
-                  "Start Game",
+                  "Spiel starten",
                   style: TextStyle(fontSize: 18),
 
                 ),

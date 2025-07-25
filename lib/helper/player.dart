@@ -9,5 +9,5 @@ class Player {
   }
 
   @override
-  String toString() => '$name: $score points';
+  String toString() => '$name: $score Punkte';
 }
