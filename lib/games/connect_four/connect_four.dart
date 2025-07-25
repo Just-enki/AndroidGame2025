@@ -18,7 +18,7 @@ class ConnectFour extends StatefulWidget {
   /// Game definition metadata for Connect Four,
   /// including the name and the valid player range.
   static final GameDefinition gameDef = GameDefinition(
-    name: 'ConnectFour',
+    name: 'Vier gewinnt',
     minPlayers: 2,
     maxPlayers: 2,
     gameBuilder: (players, gameDef) => ConnectFour(players: players),

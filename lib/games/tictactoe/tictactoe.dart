@@ -18,7 +18,7 @@ class TicTacToe extends StatefulWidget {
 
   // Static metadata defining this game, used for navigation and setup screens
   static final GameDefinition gameDef = GameDefinition(
-    name: 'TicTacToe',
+    name: 'Tic-Tac-Toe',
     minPlayers: 2,
     maxPlayers: 2,
     gameBuilder: (players, gameDef) => TicTacToe(players: players),
