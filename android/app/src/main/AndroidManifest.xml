@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="android_game_2025"
+        android:label="Playly"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

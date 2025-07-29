@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:android_game_2025/helper/player.dart';
+import 'player.dart';
 
 /// Returns a random player index between 0 and [playerCount - 1].
 ///
