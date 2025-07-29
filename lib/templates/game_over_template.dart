@@ -112,7 +112,9 @@ class Leaderboard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: Text(
-                '${player.name}:   ${player.score} Punkte',
+                '${player.name}:   ${player.score} ${player.score == 1
+                    ? 'Punkt'
+                    : 'Punkte'}',
                 style: const TextStyle(fontSize: 18),
               ),
             ),

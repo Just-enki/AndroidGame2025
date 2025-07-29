@@ -38,6 +38,7 @@ class _MemoryState extends State<Memory> {
   int matchedPairs = 0; // number of matched pairs found
 
   List<Player> get players => widget.players;
+
   Player get currentPlayer => players[currentPlayerIndex];
 
   String? winner; // name of the winner (if any)
@@ -73,7 +74,8 @@ class _MemoryState extends State<Memory> {
 
   /// Initializes or resets the game board and state
   void _initializeGame() {
-    final shuffledPairs = List.from(imagePairs)..shuffle();
+    final shuffledPairs = List.from(imagePairs)
+      ..shuffle();
 
     board = List.generate(
       4,
@@ -95,10 +97,10 @@ class _MemoryState extends State<Memory> {
   }
 
   /// Handles logic for when the second card is tapped
-  void _handleSecondTap(row, col) {
+  void _handleSecondTap(int row, int col) {
     inProgress = true;
 
-    if (checkForMatch(board, row, col, firstSelectedRow, firstSelectedCol) == true) {
+    if (checkForMatch(board, row, col, firstSelectedRow!, firstSelectedCol!)) {
       // Match found
       matchedPairs = incrementScore(
         playerScores,

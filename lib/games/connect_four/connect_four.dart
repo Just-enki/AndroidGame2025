@@ -1,4 +1,4 @@
-import 'package:android_game_2025/games/connect_four/connect_four_board.dart';
+import 'connect_four_board.dart';
 import 'package:flutter/material.dart';
 
 import 'connect_four_logic.dart';

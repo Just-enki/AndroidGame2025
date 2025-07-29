@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'memory_cell.dart';
 
@@ -28,7 +27,8 @@ class MemoryBoard extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         double boardSize = constraints.maxHeight - buttonHeight;
-        boardSize = boardSize > constraints.maxWidth ? constraints.maxWidth : boardSize;
+        boardSize = boardSize > constraints.maxWidth ?
+        constraints.maxWidth : boardSize;
 
         double cellSize = (boardSize - (margin * 2) * 4) / 4;
 
@@ -43,16 +43,16 @@ class MemoryBoard extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: List.generate(4, (j) =>
                             MemoryCell(
-                              value: board[i][j],
-                              imageAsset: board[i][j],
-                              isRevealed: revealed[i][j],
-                              onTap: () => onCellTap(i, j),
-                              i: i,
-                              j: j,
-                              board: board,
-                              revealed: revealed,
-                              cellSize: cellSize,
-                              borderWidth: borderWidth
+                                value: board[i][j],
+                                imageAsset: board[i][j],
+                                isRevealed: revealed[i][j],
+                                onTap: () => onCellTap(i, j),
+                                i: i,
+                                j: j,
+                                board: board,
+                                revealed: revealed,
+                                cellSize: cellSize,
+                                borderWidth: borderWidth
                             )
                         ),
                       ),
